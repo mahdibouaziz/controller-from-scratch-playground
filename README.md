@@ -105,3 +105,7 @@ mkdir config/crd # This will contains the generated crds by controller-gen
 
 controller-gen crd paths=./api/... output:crd:dir=./config/crd
 ```
+
+- This command: 
+    - `paths=./api/...`: Specifies the path to your Go file with the CRD definition.
+    - `output:crd:dir=./config/crd`: Specifies the output directory for the generated CRD YAML.
