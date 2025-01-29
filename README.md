@@ -60,6 +60,7 @@ mkdir api/v1 # for this example we are going directly to v1
 myresource_types.go
 
 ```golang
+// +kubebuilder:object:generate=true
 // +groupName=sample.example.com
 package v1
 
@@ -144,6 +145,37 @@ Check `controllers/myresource_controller.go` file
 
 ## Step 6: Set Up the Controller Manager
 
+Check `cmd/main.go` file
+
 ## Step 7: Generate RBAC Manifests
 
+Kubernetes controllers need **RBAC (Role-Based Access Control)** permissions to interact with the API. Instead of writing RBAC rules manually, we use `controller-gen` to generate them.
+
+To do that, add RBAC Annotations in `controller_myresource_controller.go`.
+
+Modify the top of controllers/myresource_controller.go to include RBAC permissions:
+
+```golang
+// +kubebuilder:rbac:groups=sample.example.com,resources=myresources,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=sample.example.com,resources=myresources/status,verbs=get;update;patch
+```
+
+Then you need to generate RBAC YAML files using the `controller-gen` cli
+
+```bash
+mkdir -p config/rbac
+controller-gen rbac:roleName=mycontroller paths=./controllers/... output:rbac:dir=./config/rbac
+```
+
+After that, you need to create manually the service account and the role binding (they are available under `config/rbac`)
+
 ## Step 8: Create a Deployment
+
+create folder for the manifests
+
+```bash
+mkdir -p config/manager
+touch config/manager/manager.yaml
+```
+
+then, build and push your image, and apply the controller

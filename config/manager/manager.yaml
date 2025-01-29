@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mycontroller
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mycontroller
+  template:
+    metadata:
+      labels:
+        app: mycontroller
+    spec:
+      serviceAccountName: mycontroller-sa  # Attach the correct ServiceAccount
+      containers:
+        - name: manager
+          image: mahdibouaziz/mycontroller:latest
+          command:
+            - /manager
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 100m
+              memory: 30Mi
+            requests:
+              cpu: 100m
+              memory: 20Mi

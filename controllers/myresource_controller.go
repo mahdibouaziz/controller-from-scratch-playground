@@ -1,3 +1,5 @@
+// +kubebuilder:rbac:groups=sample.example.com,resources=myresources,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=sample.example.com,resources=myresources/status,verbs=get;update;patch
 package controllers
 
 import (
@@ -7,7 +9,9 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	ctrl "sigs.k8s.io/controller-runtime"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -17,6 +21,14 @@ import (
 // MyResourceReconciler reconciles a MyResource object
 type MyResourceReconciler struct {
 	client.Client
+	Scheme *runtime.Scheme
+}
+
+// SetupWithManager registers the controller with the manager
+func (r *MyResourceReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	return ctrl.NewControllerManagedBy(mgr).
+		For(&samplev1.MyResource{}).
+		Complete(r)
 }
 
 func (r *MyResourceReconciler) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
@@ -56,7 +68,7 @@ func (r *MyResourceReconciler) Reconcile(ctx context.Context, req reconcile.Requ
 	}
 
 	// Set MyResource as the owner of the Deployment
-	if err := controllerutil.SetControllerReference(myResource, deployment, r.Scheme()); err != nil {
+	if err := controllerutil.SetControllerReference(myResource, deployment, r.Scheme); err != nil {
 		return reconcile.Result{}, err
 	}
 
