@@ -7,7 +7,7 @@ import (
 
 // MyResourceSpec defines the desired state of MyResource
 type MyResourceSpec struct {
-	ReplicaCount int    `json:"replicaCount"` // Number of replicas
+	ReplicaCount int32  `json:"replicaCount"` // Number of replicas
 	Message      string `json:"message"`      // Message to display
 }
 
