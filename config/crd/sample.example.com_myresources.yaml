@@ -42,6 +42,7 @@ spec:
               message:
                 type: string
               replicaCount:
+                format: int32
                 type: integer
             required:
             - message

@@ -179,3 +179,27 @@ touch config/manager/manager.yaml
 ```
 
 then, build and push your image, and apply the controller
+
+## Step 9: You have the make file, run these commands:
+
+```bash
+# 1️⃣ Generate DeepCopy functions, CRDs, and RBAC
+make generate
+
+# 2️⃣ Build the controller binary
+make build
+
+# 3️⃣ Build and push the Docker image
+make docker-build
+make docker-push
+
+# 4️⃣ Deploy everything to Kubernetes
+make deploy
+
+# 5️⃣ Restart the controller (if needed)
+make restart
+
+# 6️⃣ Check logs and running pods
+make get-crds
+make get-pods
+```
