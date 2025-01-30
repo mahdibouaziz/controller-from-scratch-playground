@@ -4,6 +4,7 @@ package controllers
 
 import (
 	"context"
+	"log"
 
 	samplev1 "github.com/mahdibouaziz/controller-from-scratch-playground/api/v1"
 	appsv1 "k8s.io/api/apps/v1"
@@ -32,6 +33,7 @@ func (r *MyResourceReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 
 func (r *MyResourceReconciler) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
+	log.Println("Reconciling MyResource", req.NamespacedName)
 	// Fetch the MyResource instance
 	myResource := &samplev1.MyResource{}
 

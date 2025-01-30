@@ -1,29 +1,24 @@
 # First stage: Build the Go binary
 FROM golang:1.23 AS builder
 
-# Set working directory inside the container
 WORKDIR /workspace
 
-# Copy go.mod and go.sum to download dependencies
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the entire project
 COPY . .
 
-# Build the manager binary (static binary for minimal runtime compatibility)
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /manager ./cmd/main.go
+# Build a fully static binary
+# RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o /manager ./cmd/main.go
+RUN go build -ldflags="-s -w" -o /manager ./cmd/main.go
 
-# Second stage: Use Alpine as the minimal runtime environment
-FROM alpine:latest
+# # Second stage: Use Debian Slim as the runtime
+FROM debian:bookworm-slim
 
 WORKDIR /
 
-# Install ca-certificates (needed for HTTPS calls)
-RUN apk --no-cache add ca-certificates
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 
-# Copy the compiled binary from the builder stage
 COPY --from=builder /manager /manager
 
-# Run the manager binary
 ENTRYPOINT ["/manager"]
